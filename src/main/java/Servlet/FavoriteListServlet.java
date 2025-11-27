@@ -1,41 +1,41 @@
 package Servlet;
 
-
-import DAO.FavoriteDAO;
-import DAO.FavoriteDAOImpl;
+import DAOImpl.FavoriteDAOImpl;
 import Entity.Favorite;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/favorite-list")
 public class FavoriteListServlet extends HttpServlet {
 
-    // Khởi tạo DAO
-    private FavoriteDAO favoriteDAO = new FavoriteDAOImpl();
+    private final FavoriteDAOImpl favoriteDAO = new FavoriteDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            // 1. Khai thác thực thể kết hợp: List<Favorite> favorites = FavoriteDAO.findAll()
-            List<Favorite> favorites = favoriteDAO.findAll();
+            // Lấy toàn bộ danh sách Favorite (kèm Video và User)
+            List<Favorite> favorites = favoriteDAO.findAll(); // Đã có ORDER BY likeDate DESC trong NamedQuery
 
-            // 2. Đặt danh sách vào request để chuyển sang JSP
+            // Đưa vào request
             request.setAttribute("favorites", favorites);
 
-            // 3. Chuyển hướng sang trang JSP để hiển thị
-            request.getRequestDispatcher("/views/favorite-list.jsp").forward(request, response);
+            // Forward đến JSP
+            request.getRequestDispatcher("/views/favorite-list.jsp")
+                    .forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Không thể tải danh sách video yêu thích: " + e.getMessage());
+            request.setAttribute("error", "Lỗi tải dữ liệu: " + e.getMessage());
+            request.getRequestDispatcher("/views/error.jsp").forward(request, response);
         }
     }
 }
