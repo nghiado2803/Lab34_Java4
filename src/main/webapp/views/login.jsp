@@ -1,30 +1,112 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Đăng nhập</title>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập hệ thống</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f0f0f0; }
-        .login-box {
-            width: 320px; margin: 80px auto;
-            background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px #aaa;
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
         }
-        input[type=text], input[type=password] { width: 100%; margin: 6px 0 16px; padding: 10px; }
-        input[type=submit] { padding: 10px 18px; border-radius: 5px; background: #d32f2f; border: none; color: #fff; }
-        .error { color: red; margin-bottom: 10px; }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-title {
+            text-align: center;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        .btn-login {
+            background: #e53935;
+            border: none;
+            border-radius: 50px;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .btn-login:hover {
+            background: #c62828;
+        }
+        .form-control {
+            border-radius: 50px;
+            padding: 12px 20px;
+        }
+        .input-group-text {
+            border-radius: 50px 0 0 50px;
+            background: #f8f9fa;
+        }
+        .error-alert {
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body>
-<div class="login-box">
-    <h2>Đăng nhập</h2>
-    <form action="${pageContext.request.contextPath}/login" method="post">
-        <label for="idOrEmail">Tên đăng nhập hoặc Email:</label>
-        <input type="text" name="idOrEmail" required />
-        <label for="password">Mật khẩu:</label>
-        <input type="password" name="password" required />
-        <input type="submit" value="Đăng nhập" />
-    </form>
+
+<div class="container">
+    <div class="login-box mx-auto">
+        <h2 class="login-title">
+            Đăng Nhập Hệ Thống
+        </h2>
+
+        <!-- Hiển thị lỗi nếu có -->
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger alert-dismissible fade show error-alert" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> ${error}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </c:if>
+
+        <form action="<%= request.getContextPath() %>/login" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên đăng nhập hoặc Email</label>
+                <div class="input-group">
+                    <span class="input-group-text">User</span>
+                    <input type="text" name="idOrEmail" class="form-control"
+                           placeholder="Nhập ID hoặc Email" required autofocus>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Mật khẩu</label>
+                <div class="input-group">
+                    <span class="input-group-text">Lock</span>
+                    <input type="password" name="password" class="form-control"
+                           placeholder="Nhập mật khẩu" required>
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-danger btn-login">
+                    Đăng Nhập
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Chưa có tài khoản?
+                <a href="${pageContext.request.contextPath}/register" class="text-decoration-none fw-bold text-danger">
+                    Đăng ký ngay
+                </a>
+            </small>
+        </div>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
