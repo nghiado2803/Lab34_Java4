@@ -1,9 +1,7 @@
 package Servlet;
 
-import DAO.VideoDAO;
-import DAO.VideoDAOImpl;
+import DAOImpl.VideoDAOImpl;
 import Entity.Video;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,17 +13,20 @@ import java.util.List;
 @WebServlet("/search-video")
 public class VideoSearchServlet extends HttpServlet {
 
-    private VideoDAO videoDAO = new VideoDAOImpl();
+    private final VideoDAOImpl videoDAO = new VideoDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String keyword = request.getParameter("keyword");
-        List<Video> list = null;
+
+        List<Video> videos = null;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            list = videoDAO.searchByTitle(keyword);
+            videos = videoDAO.searchByTitle(keyword.trim());
         }
-        request.setAttribute("videos", list);
+
+        request.setAttribute("videos", videos);
         request.setAttribute("keyword", keyword);
         request.getRequestDispatcher("/views/searchVideo.jsp").forward(request, response);
     }
