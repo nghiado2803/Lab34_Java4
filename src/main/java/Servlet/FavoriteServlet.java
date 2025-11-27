@@ -1,54 +1,65 @@
 package Servlet;
 
-import DAO.UserDAO;
-import DAO.UserDAOImpl;
 import Entity.User;
 import Entity.Favorite;
-
-import java.io.IOException;
-import java.util.List;
+import Entity.Video;
+import DAOImpl.FavoriteDAOImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.hibernate.Hibernate;
 
-@WebServlet("/favorite")
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/favorites")
 public class FavoriteServlet extends HttpServlet {
 
-    private UserDAO userDAO = new UserDAOImpl();
+    private final FavoriteDAOImpl favoriteDAO = new FavoriteDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Lấy user-id từ tham số request hoặc từ session
-        String userId = request.getParameter("userId");
-        if (userId == null) {
-            userId = (String) request.getSession().getAttribute("userId"); // Nếu không có từ request thì lấy từ session
-        }
+        HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
 
-        if (userId == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "User ID is required.");
+        // BẮT BUỘC ĐĂNG NHẬP
+        if (currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // Tìm kiếm User theo ID
-        User user = userDAO.findById(userId);
+        try {
+            // LẤY DANH SÁCH YÊU THÍCH + ÉP LOAD SỚM VIDEO + POSTER TRƯỚC KHI SESSION ĐÓNG
+            List<Favorite> favorites = favoriteDAO.findByUserIdWithVideo(currentUser.getId());
 
-        if (user != null) {
-            // Đưa đối tượng User vào request
-            request.setAttribute("user", user);
+            // CÁCH DỰ PHÒNG: Nếu DAO chưa có JOIN FETCH, thì ép load ở đây
+            if (favorites != null) {
+                favorites.forEach(fav -> {
+                    Video video = fav.getVideo();
+                    if (video != null) {
+                        Hibernate.initialize(video);                    // Load Video
+                        Hibernate.initialize(video.getPoster());        // Load poster (String nên an toàn)
+                        Hibernate.initialize(video.getTitle());         // Đảm bảo tất cả field cần dùng
+                    }
+                });
+            }
 
-            // Lấy danh sách các video yêu thích của người dùng
-            List<Favorite> favorites = user.getFavorites();
+            // Đưa dữ liệu vào request
             request.setAttribute("favorites", favorites);
+            request.setAttribute("user", currentUser);
 
-            // Chuyển tiếp đến trang JSP
-            request.getRequestDispatcher("/views/favorite.jsp").forward(request, response);
-        } else {
-            // Xử lý khi không tìm thấy người dùng
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy người dùng này.");
+            // Forward đến JSP
+            request.getRequestDispatcher("/views/favorite.jsp")
+                    .forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/error.jsp");
         }
     }
 }
