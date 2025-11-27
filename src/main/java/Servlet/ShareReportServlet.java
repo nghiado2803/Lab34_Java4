@@ -1,7 +1,7 @@
 package Servlet;
 
 import DAO.ShareDAO;
-import DAO.ShareDAOImpl;
+import DAOImpl.ShareDAOImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -16,7 +16,7 @@ public class ShareReportServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Map<String,Object>> report = shareDAO.getVideoShareReport();
+        List<Object[]> report = shareDAO.getVideoShareReport();
         request.setAttribute("report", report);
         request.getRequestDispatcher("/views/shareReport.jsp").forward(request, response);
     }
