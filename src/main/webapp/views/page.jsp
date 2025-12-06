@@ -58,7 +58,7 @@
     </c:if>
 
     <a href="${pageContext.request.contextPath}/login" class="btn btn-home">
-        <i class="fas fa-play-circle"></i> Xem danh sách video
+        <i class="fas fa-play-circle"></i> Xem danh sách video yêu thích
     </a>
 </div>
 
