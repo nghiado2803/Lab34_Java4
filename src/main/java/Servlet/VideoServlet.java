@@ -8,10 +8,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet({
-        "/video/list",
-        "/video/detail/*",
-        "/video/like/*",
-        "/video/share/*"
+        "/video/lists",
+        "/video/details/*",
+        "/video/likes/*",
+        "/video/shares/*"
 })
 public class VideoServlet extends HttpServlet {
 
