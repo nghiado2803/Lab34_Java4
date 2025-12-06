@@ -10,4 +10,5 @@ public interface UserDAO extends AbstractDAO<User> {
 
     User login(String email, String password);
     User findByIdOrEmail(String input);
+
 }
