@@ -24,23 +24,12 @@
             text-align: center;
             max-width: 600px;
         }
-        h1 {
-            color: #e53935;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
+        h1 { color: #e53935; font-weight: 800; margin-bottom: 20px; }
         .btn-home {
-            background: #e53935;
-            color: white;
-            padding: 12px 40px;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            margin-top: 20px;
+            background: #e53935; color: white; padding: 15px 50px;
+            border-radius: 50px; font-size: 1.3rem; margin-top: 30px;
         }
-        .btn-home:hover {
-            background: #c62828;
-            color: white;
-        }
+        .btn-home:hover { background: #c62828; }
     </style>
 </head>
 <body>
@@ -53,15 +42,15 @@
 
     <c:if test="${not empty sessionScope.currentUser}">
         <div class="alert alert-success mt-4">
+            <i class="fas fa-check-circle"></i>
             <strong>${sessionScope.currentUser.fullname}</strong> đã đăng nhập thành công!
         </div>
     </c:if>
 
-    <a href="${pageContext.request.contextPath}/login" class="btn btn-home">
-        <i class="fas fa-play-circle"></i> Xem danh sách video yêu thích
+    <!-- ĐÃ SỬA ĐÚNG ĐƯỜNG DẪN TỚI DANH SÁCH VIDEO -->
+    <a href="${pageContext.request.contextPath}/video/list" class="btn btn-home btn-lg">
+        <i class="fas fa-play-circle"></i> Xem danh sách video
     </a>
-</div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
