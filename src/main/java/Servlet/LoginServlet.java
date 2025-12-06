@@ -56,6 +56,6 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Nếu không có trang cũ → về trang yêu thích hoặc trang chủ
-        resp.sendRedirect(req.getContextPath() + "/favorites");
+        resp.sendRedirect(req.getContextPath() + "/video/lists");
     }
 }
