@@ -8,10 +8,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet({
-        "/admin/video",
-        "/admin/user",
-        "/admin/like",
-        "/admin/share"
+        "/admin/videos",
+        "/admin/users",
+        "/admin/likes",
+        "/admin/shares"
 })
 public class AdminServlet extends HttpServlet {
 
