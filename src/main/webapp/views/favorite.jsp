@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-
+<%@ include file="/views/common/header.jsp" %>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-10 col-xl-9">
