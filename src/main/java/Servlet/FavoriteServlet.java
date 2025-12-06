@@ -54,7 +54,7 @@ public class FavoriteServlet extends HttpServlet {
             request.setAttribute("user", currentUser);
 
             // Forward đến JSP
-            request.getRequestDispatcher("/views/favorite.jsp")
+            request.getRequestDispatcher("/views/favorites.jsp")
                     .forward(request, response);
 
         } catch (Exception e) {
