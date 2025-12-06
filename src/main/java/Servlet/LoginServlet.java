@@ -3,14 +3,9 @@ package Servlet;
 import DAO.UserDAO;
 import DAOImpl.UserDAOImpl;
 import Entity.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
+import jakarta.servlet.http.*;
 import java.io.IOException;
 
 @WebServlet("/login")
@@ -19,36 +14,48 @@ public class LoginServlet extends HttpServlet {
     private final UserDAO userDAO = new UserDAOImpl();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Hiển thị form đăng nhập
-        request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+        req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String idOrEmail = request.getParameter("idOrEmail");
-        String password = request.getParameter("password");
+        String idOrEmail = req.getParameter("idOrEmail");
+        String password = req.getParameter("password");
 
-        // Tìm user bằng Id hoặc Email
-        User user = userDAO.findByIdOrEmail(idOrEmail);
+        // Validate rỗng
+        if (idOrEmail == null || idOrEmail.trim().isEmpty() || password == null || password.isEmpty()) {
+            req.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            return;
+        }
+
+        // Tìm user bằng Id trước → không thấy thì tìm bằng Email
+        User user = userDAO.findByIdOrEmail(idOrEmail.trim());
 
         if (user == null || !user.getPassword().equals(password)) {
-            // Sai tài khoản hoặc mật khẩu
-            request.setAttribute("error", "Sai tên đăng nhập/Email hoặc mật khẩu!");
-            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+            req.setAttribute("error", "Sai tên đăng nhập/Email hoặc mật khẩu!");
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
             return;
         }
 
         // ĐĂNG NHẬP THÀNH CÔNG
-        HttpSession session = request.getSession();
-        session.setAttribute("currentUser", user);  // ← QUAN TRỌNG NHẤT: LƯU USER VÀO SESSION
-        session.setAttribute("userId", user.getId()); // (nếu bạn dùng ở nơi khác)
+        HttpSession session = req.getSession();
+        session.setAttribute("currentUser", user);
+        session.setAttribute("userId", user.getId());
 
-        // Chuyển hướng về trang chủ hoặc trang yêu thích
-        response.sendRedirect(request.getContextPath() + "/favorites");
-        // Nếu muốn về trang chủ thì dùng: "/home"
+        // QUAN TRỌNG: QUAY LẠI TRANG NGƯỜI DÙNG ĐANG CỐ TRUY CẬP TRƯỚC KHI BỊ CHẶN
+        String returnUrl = (String) session.getAttribute("returnUrl");
+        if (returnUrl != null && !returnUrl.isEmpty() && !returnUrl.contains("/login")) {
+            session.removeAttribute("returnUrl");  // xóa để không bị lặp
+            resp.sendRedirect(returnUrl);
+            return;
+        }
+
+        // Nếu không có trang cũ → về trang yêu thích hoặc trang chủ
+        resp.sendRedirect(req.getContextPath() + "/favorites");
     }
 }
